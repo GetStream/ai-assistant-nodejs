@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { AnthropicResponseHandler } from './AnthropicResponseHandler';
 import type { MessageParam } from '@anthropic-ai/sdk/src/resources/messages';
-import type { Channel, DefaultGenerics, Event, StreamChat } from 'stream-chat';
+import type { Channel, Event, StreamChat } from 'stream-chat';
 import type { AIAgent } from '../types';
 
 export class AnthropicAgent implements AIAgent {
@@ -34,7 +34,7 @@ export class AnthropicAgent implements AIAgent {
     this.chatClient.on('message.new', this.handleMessage);
   };
 
-  private handleMessage = async (e: Event<DefaultGenerics>) => {
+  private handleMessage = async (e: Event) => {
     if (!this.anthropic) {
       console.error('Anthropic SDK is not initialized');
       return;
@@ -68,7 +68,7 @@ export class AnthropicAgent implements AIAgent {
     const anthropicStream = await this.anthropic.messages.create({
       max_tokens: 1024,
       messages,
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-5',
       stream: true,
     });
 

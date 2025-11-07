@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { OpenAIResponseHandler } from './OpenAIResponseHandler';
 import type { AIAgent } from '../types';
-import type { Channel, DefaultGenerics, Event, StreamChat } from 'stream-chat';
+import type { Channel, Event, StreamChat } from 'stream-chat';
 
 export class OpenAIAgent implements AIAgent {
   private openai?: OpenAI;
@@ -69,7 +69,7 @@ export class OpenAIAgent implements AIAgent {
     this.chatClient.on('message.new', this.handleMessage);
   };
 
-  private handleMessage = async (e: Event<DefaultGenerics>) => {
+  private handleMessage = async (e: Event) => {
     if (!this.openai || !this.openAiThread || !this.assistant) {
       console.log('OpenAI not initialized');
       return;
