@@ -31,39 +31,51 @@ export class OpenAIAgent implements AIAgent {
     if (!apiKey) {
       throw new Error('OpenAI API key is required');
     }
-
     this.openai = new OpenAI({ apiKey });
-    this.assistant = await this.openai.beta.assistants.create({
-      name: 'Stream AI Assistant',
-      instructions: 'You are an AI assistant. Help users with their questions.',
-      tools: [
-        { type: 'code_interpreter' },
-        {
-          type: 'function',
-          function: {
-            name: 'getCurrentTemperature',
-            description: 'Get the current temperature for a specific location',
-            parameters: {
-              type: 'object',
-              properties: {
-                location: {
-                  type: 'string',
-                  description: 'The city and state, e.g., San Francisco, CA',
+
+    const assitantId = process.env.OPENAI_ASSISTANT_ID as string | undefined;
+    if (assitantId) {
+      this.assistant = await this.openai.beta.assistants.retrieve(assitantId);
+    } else {
+      this.assistant = await this.openai.beta.assistants.create({
+        name: 'Stream AI Assistant',
+        instructions:
+          'You are an AI assistant. Help users with their questions.',
+        tools: [
+          { type: 'code_interpreter' },
+          {
+            type: 'function',
+            function: {
+              name: 'getCurrentTemperature',
+              description:
+                'Get the current temperature for a specific location',
+              parameters: {
+                type: 'object',
+                properties: {
+                  location: {
+                    type: 'string',
+                    description: 'The city and state, e.g., San Francisco, CA',
+                  },
+                  unit: {
+                    type: 'string',
+                    enum: ['Celsius', 'Fahrenheit'],
+                    description:
+                      "The temperature unit to use. Infer this from the user's location.",
+                  },
                 },
-                unit: {
-                  type: 'string',
-                  enum: ['Celsius', 'Fahrenheit'],
-                  description:
-                    "The temperature unit to use. Infer this from the user's location.",
-                },
+                required: ['location', 'unit'],
               },
-              required: ['location', 'unit'],
             },
           },
-        },
-      ],
-      model: 'gpt-4o',
-    });
+        ],
+        model: 'gpt-4o',
+      });
+    }
+
+    if (!this.assistant) {
+      throw new Error('Could not create or retrieve OpenAI assistant');
+    }
+
     this.openAiThread = await this.openai.beta.threads.create();
 
     this.chatClient.on('message.new', this.handleMessage);
