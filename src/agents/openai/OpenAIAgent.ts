@@ -64,7 +64,25 @@ export class OpenAIAgent implements AIAgent {
       ],
       model: 'gpt-4o',
     });
-    this.openAiThread = await this.openai.beta.threads.create();
+
+    const threadIdFromChannel = process.env.OPENAI_CHANNEL_THREADS as boolean | undefined;
+    if (threadIdFromChannel && this.channel.data?.openaiThreadId) {
+      this.openAiThread = await this.openai.beta.threads.retrieve(
+        this.channel.data?.openaiThreadId as string,
+      );
+    } else {
+      this.openAiThread = await this.openai.beta.threads.create();
+
+      if (threadIdFromChannel) {
+        this.channel.updatePartial({
+          set: { openaiThreadId: this.openAiThread.id },
+        });
+      }
+    }
+
+    if (!this.openAiThread) {
+      throw new Error('Could not create or retrieve OpenAI thread');
+    }
 
     this.chatClient.on('message.new', this.handleMessage);
   };
