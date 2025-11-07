@@ -1,6 +1,7 @@
 import axios from 'axios';
 import OpenAI from 'openai';
 import type { AssistantStream } from 'openai/lib/AssistantStream';
+import { Stream } from 'openai/streaming';
 import type { Channel, MessageResponse, StreamChat } from 'stream-chat';
 
 export class OpenAIResponseHandler {
@@ -11,7 +12,7 @@ export class OpenAIResponseHandler {
   constructor(
     private readonly openai: OpenAI,
     private readonly openAiThread: OpenAI.Beta.Threads.Thread,
-    private readonly assistantStream: AssistantStream,
+	private readonly assistantStream: AssistantStream | Stream<OpenAI.Beta.Assistants.AssistantStreamEvent>,
     private readonly chatClient: StreamChat,
     private readonly channel: Channel,
     private readonly message: MessageResponse,

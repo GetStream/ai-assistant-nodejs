@@ -102,8 +102,9 @@ export class OpenAIAgent implements AIAgent {
       message_id: channelMessage.id,
     });
 
-    const run = this.openai.beta.threads.runs.stream(this.openAiThread.id, {
+    const run = await this.openai.beta.threads.runs.create(this.openAiThread.id, {
       assistant_id: this.assistant.id,
+	  stream: true
     });
 
     const handler = new OpenAIResponseHandler(
