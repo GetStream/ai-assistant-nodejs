@@ -1,3 +1,5 @@
+> **This repository is archived and no longer maintained.** For a current alternative, see [chat-ai-samples/nodejs-ai-assistant](https://github.com/GetStream/chat-ai-samples/tree/main/nodejs-ai-assistant).
+
 ## AI Assistant Node.js
 
 This repo contains a sample project that shows you how you can integrate StreamChat with AI services, such as Anthropic and OpenAI.
